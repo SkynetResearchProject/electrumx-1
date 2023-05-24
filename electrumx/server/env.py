@@ -74,7 +74,8 @@ class Env(EnvBase):
         self.drop_client = self.custom("DROP_CLIENT", None, re.compile)
         self.drop_client_unknown = self.boolean('DROP_CLIENT_UNKNOWN', False)
         self.blacklist_url = self.default('BLACKLIST_URL', self.coin.BLACKLIST_URL)
-        self.cache_MB = self.integer('CACHE_MB', 1200)
+        #self.cache_MB = self.integer('CACHE_MB', 1200)
+        self.cache_MB = self.integer('CACHE_MB', 90) # for VPS
         self.reorg_limit = self.integer('REORG_LIMIT', self.coin.REORG_LIMIT)
 
         # Server limits to help prevent DoS
