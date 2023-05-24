@@ -4089,3 +4089,82 @@ class Lbry(Coin):
     TX_PER_BLOCK = 43
     RPC_PORT = 9245
     REORG_LIMIT = 5000
+
+
+class Skyrcoin(Coin):
+    NAME = "Skyrcoin"
+    SHORTNAME = "SKYR"
+    NET = "mainnet"
+    XPUB_VERBYTES = bytes.fromhex("0488b21e")
+    XPRV_VERBYTES = bytes.fromhex("0488ade4")
+    GENESIS_HASH = '0000067136024464e0622d0ffdac12d98e14a36e78ad27323c3f5c2c98854a75'
+    P2PKH_VERBYTE = bytes.fromhex("19")
+    P2SH_VERBYTE = bytes.fromhex("1c")
+    WIF_BYTE = bytes.fromhex("99")
+    DESERIALIZER = lib_tx.DeserializerPIVX
+    TX_COUNT_HEIGHT = 631060
+    TX_COUNT = 1262158
+    TX_PER_BLOCK = 4
+    STATIC_BLOCK_HEADERS = False
+    RPC_PORT = 16890
+    REORG_LIMIT = 1000
+    EXPANDED_HEADER = 112
+    ZEROCOIN_START_HEIGHT = 1441
+    ZEROCOIN_END_HEIGHT = 1641
+    ZEROCOIN_BLOCK_VERSION = 4
+
+    @classmethod
+    def static_header_len(cls, height):
+        '''Given a header height return its length.'''
+        if (height >= cls.ZEROCOIN_START_HEIGHT and height < cls.ZEROCOIN_END_HEIGHT):
+            return cls.EXPANDED_HEADER
+        else:
+            return cls.BASIC_HEADER_SIZE
+
+    @classmethod
+    def header_hash(cls, header):
+        '''Given a header return the hash.'''
+        version, = struct.unpack('<I', header[:4])
+
+        if version >= cls.ZEROCOIN_BLOCK_VERSION:
+            return super().header_hash(header)
+        else:
+            import x11kvs_hash
+            return x11kvs_hash.getPoWHash(header)
+
+
+class SkyrcoinTestnet(Skyrcoin):
+    NET = "testnet"
+    XPUB_VERBYTES = bytes.fromhex("0488b21e")
+    XPRV_VERBYTES = bytes.fromhex("0488ade4")
+    GENESIS_HASH = ('0x00000018d8b262ec1838bd6208766922f463259d627cb3c8032238c34de052fe')
+    P2PKH_VERBYTE = bytes.fromhex("6F")
+    P2SH_VERBYTE = bytes.fromhex("C4")
+    WIF_BYTE = bytes.fromhex("EF")
+    TX_PER_BLOCK = 4
+    RPC_PORT = 26890
+    ZEROCOIN_HEADER = 112
+    ZEROCOIN_START_HEIGHT = 1441
+    ZEROCOIN_END_HEIGHT = 1641
+    ZEROCOIN_BLOCK_VERSION = 4
+
+    @classmethod
+    def static_header_len(cls, height):
+        '''Given a header height return its length.'''
+        if (height >= cls.ZEROCOIN_START_HEIGHT and height < cls.ZEROCOIN_END_HEIGHT):
+            return cls.EXPANDED_HEADER
+        else:
+            return cls.BASIC_HEADER_SIZE			
+			
+    @classmethod
+    def header_hash(cls, header):
+        '''Given a header return the hash.'''
+        version, = struct.unpack('<I', header[:4])
+
+        if version >= cls.ZEROCOIN_BLOCK_VERSION:
+            return super().header_hash(header)
+        else:
+            import x11kvs_hash
+            return x11kvs_hash.getPoWHash(header)			
+			
+			
