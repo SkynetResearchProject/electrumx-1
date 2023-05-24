@@ -1,18 +1,34 @@
 Setup ElectrumX Server
+
 An SPV Electrum Server is a server that provides "lite mode" type functionality. These servers run a full node, which maintains a copy of a blockchain's history (a.k.a.) "native mode". The electrum software allows developers and apps like AtomicDEX to communicate with the blockchain to query balances, transaction history or broadcast signed transactions without needing to download and sync the full chain locally.
 
-A list of known electrum servers is maintained at ???https://github.com/KomodoPlatform/coins/tree/master/electrums It's recommended to run at least 2 - 3 electrum servers to ensure stable operation.
+A list of known electrum servers is maintained at https://github.com/KomodoPlatform/coins/tree/master/electrums It's recommended to run at least 2 - 3 electrum servers to ensure stable operation.
 
 Check out the ElectrumX Docs (opens new window)for more info.
 
+
+
+
+
+
 #Installation
+
+
 sudo apt-get install python3-setuptools python3-multidict python3.9 libleveldb-dev
 cd ~
 sudo git clone https://github.com/KomodoPlatform/electrumx-1
 cd ~/electrumx-1
 sudo pip3.9 install .
 sudo pip3.9 install .[uvloop,ujson]
+
+
+
+
+
+
 #Coin Configuration
+
+
 If you are launching the electrum server for a new smartchain, you will have to add it to the ~/electrumx-1/electrumx/lib/coins.py file. You can skip this step if seeting up an electrum server for KMD or another coin which already exists in this file.
 
 For example, using the Skyrcoin Smart Chain (lib/coins.py):
@@ -78,6 +94,7 @@ class SkyrcoinTestnet(Skyrcoin):
     ZEROCOIN_HEADER = 112
     ZEROCOIN_START_HEIGHT = 1441
     ZEROCOIN_END_HEIGHT = 1641
+    ZEROCOIN_BLOCK_VERSION = 4
 
     @classmethod
     def static_header_len(cls, height):
@@ -91,17 +108,11 @@ class SkyrcoinTestnet(Skyrcoin):
     def header_hash(cls, header):
         '''Given a header return the hash.'''
         version, = struct.unpack('<I', header[:4])
-        #print("------------------------------------")
-        #print("================version ", version)
-        #print("================header ", len(header))
-        #print("================header ", binascii.hexlify(header))
+
         if version >= cls.ZEROCOIN_BLOCK_VERSION:
-            #print("super ",binascii.hexlify(super().header_hash(header)))
-            #print("double ",binascii.hexlify(double_sha256(header)))
             return super().header_hash(header)
         else:
             import x11kvs_hash
-            #print("+++x11kvs_hash ",binascii.hexlify(x11kvs_hash.getPoWHash(header)))
             return x11kvs_hash.getPoWHash(header)			
 			
 			
@@ -109,11 +120,18 @@ class SkyrcoinTestnet(Skyrcoin):
 NAME, SHORTNAME and RPC_PORT are to be changed accordingly.
 
 
+
+
+
+
+
+
+#Install X11KVS-hash
+
+
 sudo git clone https://github.com/SkynetResearchProject/X11KVS-hash.git
 cd X11KVS-hash
 sudo python3 setup.py install
-
-
 
 
 
@@ -146,7 +164,7 @@ Get your RPC_USER, RPC_PASS and RPC_PORT from your conf file, e.g. ~/.komodo/RIC
 
 COIN = Skyrcoin
 DB_DIRECTORY = /opt/electrumx-1/electrumdb/
-DAEMON_URL = http://2RfZMheEX9:HGrFM3EM9IO9GEWMnStlQW@127.0.0.1:16890/
+DAEMON_URL = http://scyrcoind_user:scyrcoind_pass@127.0.0.1:16890/
 SERVICES = tcp://:50001,rpc://:8000
 EVENT_LOOP_POLICY = uvloop
 PEER_DISCOVERY = self
@@ -166,6 +184,7 @@ BANDWIDTH_UNIT_COST = 10000
 
 
 #SSL
+
 
 You can read more about the available environment variables in the ElectrumX Docs(opens new window)
 
@@ -213,6 +232,23 @@ WantedBy=multi-user.target
 
 
 
+
+
+
+#Copy files electrumx_server and electrumx_rpc
+
+
+sudo cp /opt/electrumx-1/electrumx_server /usr/local/bin/electrumx_server 
+sudo cp /opt/electrumx-1/electrumx_rpc /usr/local/bin/electrumx_rpc
+
+
+
+
+
+
+#Start
+
+
 sudo systemctl start electrumx_skyr
 
 To check its status:
@@ -228,6 +264,8 @@ sudo journalctl -f -u electrumx_skyr.service --since today
 
 
 #Confirm the server is running
+
+
 To issue commands to the electrum server from a local terminal use (change the transaction ID below to one valid for the chain)
 
 echo '{"method":"blockchain.transaction.get","params":["8e3293602465cf6d234fda4a2bb13affb4b5a3fb5bd46eb11a14ed72ac1836e0", true],"id":"test"}' | nc <ELECTRUM_SERVER_IP> <ELECTRUM_TCP_PORT> -i 1 | jq .
@@ -242,7 +280,13 @@ print(ws.recv())
 ws.close()
 
 
+
+
+
+
 #Maintainence
+
+
 To keep your electrum server running smoothly, it is recommended to compact the database once a week. We can do this with a crontab (opens new window)entry as below:
 
 33 3 * * 3 sudo systemctl stop electrumx_RICK && COIN=Rick; DB_DIRECTORY=/electrumdb/RICK; /home/<USERNAME>/electrumx-1/electrumx_compact_history && sudo systemctl start electrumx_RICK
