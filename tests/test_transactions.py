@@ -7,7 +7,7 @@
 
 import json
 import os
-from binascii import unhexlify
+from binascii import unhexlify, hexlify
 
 import pytest
 
@@ -52,16 +52,30 @@ def test_transaction(transaction_details):
     vout = tx_info['vout']
     for i in range(len(vout)):
         # value pk_script
+        if vout[i]['value']==0:
+            continue
         assert vout[i]['value'] == tx.outputs[i].value
         spk = vout[i]['scriptPubKey']
+
         tx_pks = tx.outputs[i].pk_script
         assert spk['hex'] == tx_pks.hex()
         if "addresses" in spk:
-            assert len(spk["addresses"]) == 1
-            address = spk["addresses"][0]
+            if coin.NAME == "Skyrcoin" or coin.NAME == "PIVX":
+                if vout[i]['scriptPubKey']['type']=="coldstake":
+                    assert len(spk["addresses"]) == 2
+                    address = spk["addresses"][1]  # owner_address
+                    assert coin.address_to_hashX(address) == coin.hashX_from_script(tx_pks)
+                else:
+                    address = spk["addresses"][0]
+                    assert coin.address_to_hashX(address) == coin.hashX_from_script(tx_pks)
+            else:
+                assert len(spk["addresses"]) == 1
+                address = spk["addresses"][0]
+                assert coin.address_to_hashX(address) == coin.hashX_from_script(tx_pks)
+            
         else:
             address = spk["address"]
-        assert coin.address_to_hashX(address) == coin.hashX_from_script(tx_pks)
+            assert coin.address_to_hashX(address) == coin.hashX_from_script(tx_pks)
         if issubclass(coin, Namecoin):
             if "nameOp" not in spk or "name" not in spk["nameOp"]:
                 assert coin.name_hashX_from_script(tx_pks) is None

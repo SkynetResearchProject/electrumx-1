@@ -59,7 +59,8 @@ OpCodes = Enumeration("Opcodes", [
     "OP_CODESEPARATOR", "OP_CHECKSIG", "OP_CHECKSIGVERIFY", "OP_CHECKMULTISIG",
     "OP_CHECKMULTISIGVERIFY",
     "OP_NOP1",
-    "OP_CHECKLOCKTIMEVERIFY", "OP_CHECKSEQUENCEVERIFY"
+    "OP_CHECKLOCKTIMEVERIFY", "OP_CHECKSEQUENCEVERIFY",
+    ("OP_CHECKCOLDSTAKEVERIFY_LOF", 0xd1), ("OP_CHECKCOLDSTAKEVERIFY", 0xd1)
 ])
 
 
@@ -105,6 +106,9 @@ class ScriptPubKey:
     TO_P2SH_OPS = (OpCodes.OP_HASH160, -1, OpCodes.OP_EQUAL)
     TO_PUBKEY_OPS = (-1, OpCodes.OP_CHECKSIG)
 
+    TO_P2CS_OPS = (OpCodes.OP_DUP, OpCodes.OP_HASH160, OpCodes.OP_ROT, OpCodes.OP_IF, OpCodes.OP_CHECKCOLDSTAKEVERIFY, -1,
+                  OpCodes.OP_ELSE, -1, OpCodes.OP_ENDIF, OpCodes.OP_EQUALVERIFY, OpCodes.OP_CHECKSIG)
+
     @classmethod
     def P2SH_script(cls, hash160):
         return (bytes((OpCodes.OP_HASH160,))
@@ -117,6 +121,13 @@ class ScriptPubKey:
                 + Script.push_data(hash160)
                 + bytes((OpCodes.OP_EQUALVERIFY, OpCodes.OP_CHECKSIG)))
 
+    @classmethod
+    def P2CS_script(cls, staker_hash160, owner_hash160):
+        return (bytes((OpCodes.OP_DUP, OpCodes.OP_HASH160, OpCodes.OP_ROT, OpCodes.OP_IF, OpCodes.OP_CHECKCOLDSTAKEVERIFY))
+                + Script.push_data(staker_hash160)
+                + bytes((OpCodes.OP_ELSE))
+                + Script.push_data(owner_hash160)
+                + bytes((OpCodes.OP_ENDIF, OpCodes.OP_EQUALVERIFY, OpCodes.OP_CHECKSIG)))
 
 class Script:
 

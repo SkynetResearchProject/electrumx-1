@@ -209,6 +209,7 @@ class Coin:
         verlen = len(raw) - 20
         if verlen > 0:
             verbyte, hash160 = raw[:verlen], raw[verlen:]
+            #print ("\n", verbyte, hash160)
 
         if verbyte == cls.P2PKH_VERBYTE:
             return cls.hash160_to_P2PKH_script(hash160)
@@ -2854,6 +2855,65 @@ class Pivx(Coin):
             import quark_hash
             return quark_hash.getPoWHash(header)
 
+    @classmethod
+    def hashX_from_script(cls, script):
+        '''Returns a hashX from a script.'''
+        if len(script) > 25: # coldstake
+            script2 = cls.hash160_to_P2PKH_script(cls.get_spending_address(script))
+            return sha256(script2).digest()[:HASHX_LEN]
+        else:
+            return sha256(script).digest()[:HASHX_LEN]
+
+    @classmethod
+    def get_staking_address(cls, script):
+        '''Returns a hashX from a script. Patch for P2PK outputs'''
+        def match(ops, pattern):
+            if len(ops) != len(pattern):
+                return False
+            for op, pop in zip(ops, pattern):
+                if pop != op:
+                    # -1 means 'data push', whose op is an (op, data) tuple
+                    if pop == -1 and isinstance(op, tuple):
+                        continue
+                    return False
+            return True
+
+        ops = []
+        try:
+            ops = Script.get_ops(script)
+        except ScriptError:
+            return
+
+        if match(ops, ScriptPubKey.TO_P2CS_OPS):
+            return ops[5][-1]
+
+        return
+
+    @classmethod
+    def get_spending_address(cls, script):
+        '''Returns a hashX from a script. Patch for P2PK outputs'''
+        def match(ops, pattern):
+            if len(ops) != len(pattern):
+                return False
+            for op, pop in zip(ops, pattern):
+                if pop != op:
+                    # -1 means 'data push', whose op is an (op, data) tuple
+                    if pop == -1 and isinstance(op, tuple):
+                        continue
+                    return False
+            return True
+
+        ops = []
+        try:
+            ops = Script.get_ops(script)
+        except ScriptError:
+            return
+
+        if match(ops, ScriptPubKey.TO_P2CS_OPS):
+            return ops[7][-1]
+
+        return
+
 
 class PivxTestnet(Pivx):
     NET = "testnet"
@@ -4132,6 +4192,66 @@ class Skyrcoin(Coin):
             import x11kvs_hash
             return x11kvs_hash.getPoWHash(header)
 
+    @classmethod
+    def hashX_from_script(cls, script):
+        '''Returns a hashX from a script.'''
+        if len(script) > 25: # coldstake
+            script2 = cls.hash160_to_P2PKH_script(cls.get_spending_address(script))
+            return sha256(script2).digest()[:HASHX_LEN]
+        else:
+            return sha256(script).digest()[:HASHX_LEN]
+
+    @classmethod
+    def get_staking_address(cls, script):
+        '''Returns a hashX from a script. Patch for P2PK outputs'''
+        def match(ops, pattern):
+            if len(ops) != len(pattern):
+                return False
+            for op, pop in zip(ops, pattern):
+                if pop != op:
+                    # -1 means 'data push', whose op is an (op, data) tuple
+                    if pop == -1 and isinstance(op, tuple):
+                        continue
+                    return False
+            return True
+
+        ops = []
+        try:
+            ops = Script.get_ops(script)
+        except ScriptError:
+            return
+
+        if match(ops, ScriptPubKey.TO_P2CS_OPS):
+            return ops[5][-1]
+
+        return
+
+    @classmethod
+    def get_spending_address(cls, script):
+        '''Returns a hashX from a script. Patch for P2PK outputs'''
+        def match(ops, pattern):
+            if len(ops) != len(pattern):
+                return False
+            for op, pop in zip(ops, pattern):
+                #print ("\n", op, pop)
+                if pop != op:
+                    # -1 means 'data push', whose op is an (op, data) tuple
+                    if pop == -1 and isinstance(op, tuple):
+                        continue
+                    return False
+            return True
+
+        ops = []
+        try:
+            ops = Script.get_ops(script)
+            #print ("ops=", ops)
+        except ScriptError:
+            return
+
+        if match(ops, ScriptPubKey.TO_P2CS_OPS):
+            return ops[7][-1]
+
+        return
 
 class SkyrcoinTestnet(Skyrcoin):
     NET = "testnet"

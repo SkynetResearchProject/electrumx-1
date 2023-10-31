@@ -1,0 +1,60 @@
+{
+  "txid": "7dd728f6e43f85f8e65917da7ff131d83520da5d60cbde9203802fbe2013ad17",
+  "version": 1,
+  "size": 262,
+  "locktime": 0,
+  "vin": [
+    {
+      "txid": "593e3c89a771c2d75c3229b943321fb9b1c977337b4ae486fe090c6c828cfb52",
+      "vout": 1,
+      "scriptSig": {
+        "asm": "30440220335e73220288439607def63bea2fecb52b9c890e2dda85f312275f74d9889529022003f4d4781b29e092cc31ce67a867489285243b937c23ca83bb1af47b38c7b928[ALL] 81 02899378b86821a9ace9c69beef8c699ed4c43c287a2569209e80db581f4e9843e",
+        "hex": "4730440220335e73220288439607def63bea2fecb52b9c890e2dda85f312275f74d9889529022003f4d4781b29e092cc31ce67a867489285243b937c23ca83bb1af47b38c7b9280101512102899378b86821a9ace9c69beef8c699ed4c43c287a2569209e80db581f4e9843e"
+      },
+      "sequence": 4294967295
+    }
+  ],
+  "vout": [
+    {
+      "value": 0.00,
+      "n": 0,
+      "scriptPubKey": {
+        "asm": "",
+        "hex": "",
+        "type": "nonstandard"
+      }
+    },
+    {
+      "value": 69141124953,
+      "n": 1,
+      "scriptPubKey": {
+        "asm": "OP_DUP OP_HASH160 OP_ROT OP_IF OP_CHECKCOLDSTAKEVERIFY bb06a6c0a9adc55c2f1a98d4697914f18cdb0d79 OP_ELSE e111b41a513c671f03dd19f8088cfae8464c2e32 OP_ENDIF OP_EQUALVERIFY OP_CHECKSIG",
+        "hex": "76a97b63d114bb06a6c0a9adc55c2f1a98d4697914f18cdb0d796714e111b41a513c671f03dd19f8088cfae8464c2e326888ac",
+        "reqSigs": 2,
+        "type": "coldstake",
+        "addresses": [
+          "SeLuMrpzPmP3rP6Lu6w1eUtczuhJx9LE3f",
+          "BQy8rwUCi8dUkKZ1GFRjGH93MDmVgD6UMR"
+        ]
+      }
+    },
+    {
+      "value": 40000000,
+      "n": 2,
+      "scriptPubKey": {
+        "asm": "OP_DUP OP_HASH160 9efa627cda9d662d2edc98b488766eddec7f3f60 OP_EQUALVERIFY OP_CHECKSIG",
+        "hex": "76a9149efa627cda9d662d2edc98b488766eddec7f3f6088ac",
+        "reqSigs": 1,
+        "type": "pubkeyhash",
+        "addresses": [
+          "BJwgL4RgrJYyg3DkWUnLN6ezjwTaR1mvKz"
+        ]
+      }
+    }
+  ],
+  "hex": "010000000152fb8c826c0c09fe86e44a7b3377c9b1b91f3243b929325cd7c271a7893c3e59010000006c4730440220335e73220288439607def63bea2fecb52b9c890e2dda85f312275f74d9889529022003f4d4781b29e092cc31ce67a867489285243b937c23ca83bb1af47b38c7b9280101512102899378b86821a9ace9c69beef8c699ed4c43c287a2569209e80db581f4e9843effffffff0300000000000000000059d72119100000003376a97b63d114bb06a6c0a9adc55c2f1a98d4697914f18cdb0d796714e111b41a513c671f03dd19f8088cfae8464c2e326888ac005a6202000000001976a9149efa627cda9d662d2edc98b488766eddec7f3f6088ac00000000",
+  "blockhash": "f55601770312b135a2657134a743aa59c739ce3bce4bc4358b971b3850907d12",
+  "confirmations": 5095,
+  "time": 1697442000,
+  "blocktime": 1697442000
+}
